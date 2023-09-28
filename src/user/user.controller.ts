@@ -8,8 +8,8 @@ export class UserController {
 
   @Get()
   findAll(): Promise<User[]> {
+    console.log("==")
     let all = this.userService.findAll()
-    console.log(all)
     return all;
     // console.log this.userService.findAll();
   }
@@ -21,6 +21,7 @@ export class UserController {
 
   @Post() // Add a POST route for creating users
   create(@Body() user: User): Promise<User> {
+
     return this.userService.create(user);
   }
 
