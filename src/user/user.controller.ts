@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Delete, Body, ParseIntPipe } from '@nestjs/common'; // Import the 'Post' decorator and 'Body' decorator
+import { Controller, Get, Post, Param, Delete, Body, ParseIntPipe,Put } from '@nestjs/common'; // Import the 'Post' decorator and 'Body' decorator
 import { UserService } from './user.service';
 import { User } from '../entity/user.entity';
 
@@ -20,6 +20,12 @@ export class UserController {
   @Post() // Add a POST route for creating users
   create(@Body() user: User): Promise<User> {
     return this.userService.create(user);
+  }
+  @Put(':id')
+  async update(@Param('id') id: number, @Body() updateUser: User) {
+    // Pass the id and updateUser object to your service method
+    const updatedUser = await this.userService.update(id, updateUser);
+    return updatedUser; // You can return the updated user or an appropriate response
   }
 
   @Delete(':id')
