@@ -2,6 +2,8 @@ import { Injectable ,NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
+import * as bcrypt from 'bcrypt';
+// import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
@@ -9,6 +11,7 @@ export class UserService {
     constructor(
         @InjectRepository(User)
         private usersRepository: Repository<User>,
+        // private readonly jwtService: JwtService,
       ) {}
     
       findAll(): Promise<User[]> {
@@ -43,12 +46,31 @@ export class UserService {
         }
       }
 
-      
+
       async create(user: User): Promise<User> {
         const newUser = this.usersRepository.create(user);
         return this.usersRepository.save(newUser);
       }
+      async login(email: string, password: string): Promise<{ message: string }> {
+        try {
+          const user = await this.usersRepository.findOne({ where: { email } });
     
+          if (user) {
+            const passwordMatch = await bcrypt.compare(password, user.password);
+    
+            if (passwordMatch) {
+            //   const payload = {id: user.id, email: user.email };
+            //   const token = this.jwtService.sign(payload, { expiresIn: '7d' });
+    
+              return { message: 'Login successful!' };
+            }
+          }
+    
+          return { message: 'Invalid credentials!' };
+        } catch (error) {
+          throw new Error(`Error during login: ${error.message}`);
+        }
+      }
     
       async remove(id: number): Promise<void> {
         await this.usersRepository.delete(id);

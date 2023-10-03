@@ -12,6 +12,7 @@ import { UserService } from './user.service';
 import { User } from '../entity/user.entity';
 import * as bcrypt from 'bcrypt';
 
+
 @Controller('users') // This sets the base route for this controller to '/users'
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -37,12 +38,24 @@ export class UserController {
 
     return this.userService.create(user);
   }
+
+  
+
   @Put(':id')
   async update(@Param('id') id: number, @Body() updateUser: User) {
     // Pass the id and updateUser object to your service method
     const updatedUser = await this.userService.update(id, updateUser);
     return updatedUser; // You can return the updated user or an appropriate response
   }
+  @Post('login')
+  async login(@Body() credentials: { email: string; password: string }) {
+    try {
+      const { email, password } = credentials;
+      const result = await this.userService.login(email, password);
+      return result;
+    } catch (error) {
+      return { message: 'Error during login' };
+    }}
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
