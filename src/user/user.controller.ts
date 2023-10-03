@@ -47,6 +47,8 @@ export class UserController {
     const updatedUser = await this.userService.update(id, updateUser);
     return updatedUser; // You can return the updated user or an appropriate response
   }
+
+  
   @Post('login')
   async login(@Body() credentials: { email: string; password: string }) {
     try {

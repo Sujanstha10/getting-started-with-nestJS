@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
 import * as bcrypt from 'bcrypt';
-// import { JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
@@ -11,7 +11,7 @@ export class UserService {
     constructor(
         @InjectRepository(User)
         private usersRepository: Repository<User>,
-        // private readonly jwtService: JwtService,
+        private readonly jwtService: JwtService,
       ) {}
     
       findAll(): Promise<User[]> {
@@ -51,7 +51,7 @@ export class UserService {
         const newUser = this.usersRepository.create(user);
         return this.usersRepository.save(newUser);
       }
-      async login(email: string, password: string): Promise<{ message: string }> {
+      async login(email: string, password: string): Promise<{ message: string; token?: string }> {
         try {
           const user = await this.usersRepository.findOne({ where: { email } });
     
@@ -59,10 +59,10 @@ export class UserService {
             const passwordMatch = await bcrypt.compare(password, user.password);
     
             if (passwordMatch) {
-            //   const payload = {id: user.id, email: user.email };
-            //   const token = this.jwtService.sign(payload, { expiresIn: '7d' });
+              const payload = {id: user.id, email: user.email };
+              const token = this.jwtService.sign(payload, { expiresIn: '7d' });
     
-              return { message: 'Login successful!' };
+              return { message: 'Login successful!', token };
             }
           }
     
